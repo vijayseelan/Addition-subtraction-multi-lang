@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>சேர்த்தல் கழித்தல் பயிற்சி</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            text-align: center;
+            background-color: #f2f2f2;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #ffffff;
+            background-color: #663399;
+            padding: 20px;
+            margin: 0;
+            font-size: 24px;
+            border-bottom-left-radius: 50px;
+            border-bottom-right-radius: 50px;
+        }
+        .mode-button {
+            background: #ff6347;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px 5px;
+            cursor: pointer;
+            border-radius: 25px;
+            display: inline-block;
+            transition: background 0.3s, transform 0.3s;
+            font-size: 18px;
+        }
+        .mode-button:hover {
+            background: #ff4500;
+            transform: scale(1.05);
+        }
+        .equation {
+            margin: 20px;
+            padding: 20px;
+            background: #ffffff;
+            color: #333;
+            border: 3px solid #ff6347;
+            border-radius: 20px;
+            display: inline-block;
+            font-size: 24px;
+            transition: background 0.3s;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .options {
+            margin: 10px;
+        }
+        .option {
+            background: #32cd32;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            margin: 10px 5px;
+            cursor: pointer;
+            border-radius: 25px;
+            display: inline-block;
+            transition: background 0.3s, transform 0.3s;
+            font-size: 18px;
+        }
+        .option:hover {
+            background: #228b22;
+            transform: scale(1.05);
+        }
+        .result {
+            font-size: 18px;
+            margin-top: 20px;
+        }
+        .points {
+            font-size: 18px;
+            margin-top: 20px;
+            color: #333;
+        }
+        .replay-button {
+            background: #ff6347;
+            color: #fff;
+            border: none;
+            padding: 15px 30px;
+            cursor: pointer;
+            border-radius: 25px;
+            margin-top: 20px;
+            transition: background 0.3s, transform 0.3s;
+            font-size: 18px;
+        }
+        .replay-button:hover {
+            background: #ff4500;
+            transform: scale(1.05);
+        }
+        .section-box {
+            background: #87ceeb;
+            color: #333;
+            border: 1px solid #87ceeb;
+            padding: 15px 30px;
+            margin: 10px 5px;
+            cursor: pointer;
+            border-radius: 25px;
+            display: inline-block;
+            transition: background 0.3s, transform 0.3s;
+            font-size: 18px;
+        }
+        .section-box:hover {
+            background: #00bfff;
+            transform: scale(1.05);
+        }
+        .language-toggle {
+            margin: 20px;
+        }
+        .language-button {
+            background: #32cd32;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 0 10px;
+            cursor: pointer;
+            border-radius: 20px;
+            display: inline-block;
+            transition: background 0.3s, transform 0.3s;
+            font-size: 18px;
+        }
+        .language-button:hover {
+            background: #228b22;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <h1 id="title">சேர்த்தல் கழித்தல் பயிற்சி</h1>
+    <div class="language-toggle">
+        <button class="language-button" onclick="setLanguage('en')">English</button>
+        <button class="language-button" onclick="setLanguage('ms')">Malay</button>
+        <button class="language-button" onclick="setLanguage('ta')">தமிழ்</button>
+    </div>
+    <div>
+        <button class="mode-button" id="addition-btn" onclick="setMode('addition')">சேர்த்தல்</button>
+        <button class="mode-button" id="subtraction-btn" onclick="setMode('subtraction')">கழித்தல்</button>
+    </div>
+    <div id="sections"></div>
+    <div id="game"></div>
+    <div class="result" id="result"></div>
+    <div class="points" id="points">0/20</div>
+    <button id="replay" class="replay-button" onclick="replayGame()">மீண்டும் முயல்க</button>
+
+    <script>
+        const texts = {
+            en: {
+                title: "Addition and Subtraction Practice",
+                addition: "Addition",
+                subtraction: "Subtraction",
+                correct: "Correct!",
+                wrong: "Wrong. Try again.",
+                gameOver: "Game Over! Score: ",
+                tryAgain: "Try Again",
+                points: "Points: "
+            },
+            ms: {
+                title: "Latihan Penambahan dan Penolakan",
+                addition: "Penambahan",
+                subtraction: "Penolakan",
+                correct: "Betul!",
+                wrong: "Salah. Cuba lagi.",
+                gameOver: "Permainan Tamat! Skor: ",
+                tryAgain: "Cuba Lagi",
+                points: "Mata: "
+            },
+            ta: {
+                title: "சேர்த்தல் கழித்தல் பயிற்சி",
+                addition: "சேர்த்தல்",
+                subtraction: "கழித்தல்",
+                correct: "சரி!",
+                wrong: "தவறு. மீண்டும் முயல்க.",
+                gameOver: "விளையாட்டு முடிந்தது! மதிப்பெண்: ",
+                tryAgain: "மீண்டும் முயல்க",
+                points: "மதிப்பெண்: "
+            }
+        };
+
+        let currentLanguage = 'ta';
+        let mode = 'addition';
+        const sections = Array.from({ length: 20 }, (_, i) => ({
+            start: i * 10 + 1,
+            end: (i + 1) * 10,
+            equations: generateEquations(i * 10 + 1, (i + 1) * 10, mode)
+        }));
+
+        let currentSection = 0;
+        let currentEquation = 0;
+        let score = 0;
+        let correctAnswers = 0;
+        let wrongAnswers = [];
+        let initialQuestions = 0;
+
+        function setLanguage(lang) {
+            currentLanguage = lang;
+            document.getElementById('title').innerText = texts[lang].title;
+            document.getElementById('addition-btn').innerText = texts[lang].addition;
+            document.getElementById('subtraction-btn').innerText = texts[lang].subtraction;
+            document.getElementById('replay').innerText = texts[lang].tryAgain;
+            document.getElementById('points').innerText = `${correctAnswers}/20`;
+            loadEquation();
+        }
+
+        function generateEquations(start, end, mode) {
+            const equations = [];
+            for (let i = 0; i < 20; i++) {
+                let num1, num2, result;
+                do {
+                    num1 = Math.floor(Math.random() * end) + 1;
+                    num2 = Math.floor(Math.random() * end) + 1;
+                    if (mode === 'addition') {
+                        result = num1 + num2;
+                    } else {
+                        result = num1 - num2;
+                    }
+                } while (result < start || result > end);
+
+                const options = generateOptions(result, start, end, mode);
+                equations.push({ num1, num2, result, options });
+            }
+            return equations;
+        }
+
+        function generateOptions(correctAnswer, start, end, mode) {
+            const options = new Set([correctAnswer]);
+            while (options.size < 4) {
+                let distractor;
+                if (mode === 'addition') {
+                    distractor = correctAnswer + Math.floor(Math.random() * 20) - 10;
+                } else {
+                    distractor = correctAnswer - Math.floor(Math.random() * 20) + 10;
+                }
+                if (distractor >= start && distractor <= end && distractor !== correctAnswer) {
+                    options.add(distractor);
+                }
+            }
+            return Array.from(options).sort(() => Math.random() - 0.5);
+        }
+
+        function loadSections() {
+            const sectionsHtml = sections.map((section, index) =>
+                `<div class="section-box" onclick="selectSection(${index})">${section.start}-${section.end}</div>`
+            ).join('');
+            document.getElementById('sections').innerHTML = sectionsHtml;
+        }
+
+        function setMode(newMode) {
+            mode = newMode;
+            sections.forEach((section, index) => {
+                sections[index].equations = generateEquations(section.start, section.end, mode);
+            });
+            selectSection(0);
+        }
+
+        function selectSection(index) {
+            currentSection = index;
+            currentEquation = 0;
+            score = 0;
+            correctAnswers = 0;
+            wrongAnswers = [];
+            initialQuestions = sections[currentSection].equations.length;
+            document.getElementById('points').innerText = `0/20`;
+            loadEquation();
+        }
+
+        function loadEquation() {
+            if (currentEquation >= sections[currentSection].equations.length) {
+                if (wrongAnswers.length > 0) {
+                    sections[currentSection].equations = wrongAnswers;
+                    wrongAnswers = [];
+                    currentEquation = 0;
+                    document.getElementById('result').innerHTML = `<p>${texts[currentLanguage].wrong}</p>`;
+                } else {
+                    document.getElementById('result').innerHTML = `<p>${texts[currentLanguage].gameOver} ${score}</p>`;
+                    document.getElementById('replay').style.display = 'inline-block';
+                    return;
+                }
+            }
+
+            const equation = sections[currentSection].equations[currentEquation];
+            const equationHtml = `${equation.num1} ${mode === 'addition' ? '+' : '-'} ${equation.num2} = ?`;
+            const optionsHtml = equation.options.map(option =>
+                `<button class="option" onclick="checkAnswer(${option})">${option}</button>`
+            ).join('');
+
+            document.getElementById('game').innerHTML = `<div class="equation">${equationHtml}</div><div class="options">${optionsHtml}</div>`;
+        }
+
+        function checkAnswer(selectedOption) {
+            const equation = sections[currentSection].equations[currentEquation];
+            if (selectedOption === equation.result) {
+                score++;
+                correctAnswers++;
+                document.getElementById('result').innerHTML = `<p style="color: green;">${texts[currentLanguage].correct}</p>`;
+            } else {
+                wrongAnswers.push(equation);
+                document.getElementById('result').innerHTML = `<p style="color: red;">${texts[currentLanguage].wrong}</p>`;
+            }
+            currentEquation++;
+            document.getElementById('points').innerText = `${correctAnswers}/20`;
+            setTimeout(loadEquation, 1000);
+        }
+
+        function replayGame() {
+            document.getElementById('replay').style.display = 'none';
+            selectSection(currentSection);
+        }
+
+        loadSections();
+        setLanguage(currentLanguage); // Initialize the text with the default language
+    </script>
+</body>
+</html>
